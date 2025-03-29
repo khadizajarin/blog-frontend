@@ -24,7 +24,7 @@ const AuthPage: React.FC = () => {
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       alert("User created successfully!");
-    //   navigate("/posts");
+     navigate("/posts");
     } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message); // Now TypeScript knows 'err' is an instance of 'Error'

@@ -45,9 +45,9 @@ const Posts: React.FC = () => {
   }
 
   return (
-    <div className='bg-[#E0F7FA]'>
+    <div className='bg-[#E0F7FA] h-full pb-10'>
       <BlogSearchBar />
-      <div className='p-8'>
+      <div className='pl-8'>
         {posts.length === 0 ? (
         <p>No posts found</p>
       ) : (
