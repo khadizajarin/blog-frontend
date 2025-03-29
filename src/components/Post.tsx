@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/Posts.tsx
 
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import BlogSearchBar from './BlogSearchBar';
 import BlogCard from './BlogCard';
+import BlogForm from './BlogForm';
 
 interface Post {
+  _id: Key | null | undefined;
   title: string;
   tags: string[];
   description: string;
   author: string;
   publishedDate: string;
   likes: number;
-  views: string;
+  views: number;
   images: string[];
   authorImage: string;
 }
@@ -21,6 +23,7 @@ interface Post {
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,14 +45,14 @@ const Posts: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className='bg-[#E0F7FA]'>
       <BlogSearchBar />
-      
-      {posts.length === 0 ? (
+      <div className='p-8'>
+        {posts.length === 0 ? (
         <p>No posts found</p>
       ) : (
         posts.map((post) => (
-          <div  className="my-4">
+          <div key={post._id} className="my-4">
             <BlogCard 
               title={post.title}
               tags={post.tags}
@@ -64,6 +67,15 @@ const Posts: React.FC = () => {
           </div>
         ))
       )}
+      </div>
+      
+      
+      <div className='pl-8'>
+        <button onClick={() => setModalOpen(true)} className="bg-[#003B95] text-white px-4 py-2 rounded">
+          Post Your Blog
+        </button>
+      </div>
+      <BlogForm isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

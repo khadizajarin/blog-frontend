@@ -5,7 +5,7 @@ import { MdRefresh } from "react-icons/md";
 
 const BlogSearchBar: React.FC = () => {
   return (
-    <div className="bg-blue-100 p-4 rounded-lg flex flex-col md:flex-row items-center gap-4 w-full">
+    <div className="bg-[#E0F7FA] p-4 rounded-lg flex flex-col md:flex-row items-center gap-4 w-full">
       {/* Search Bar */}
       <div className="relative w-full md:w-1/2">
         <input

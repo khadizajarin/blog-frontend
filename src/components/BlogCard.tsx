@@ -26,16 +26,16 @@ const BlogCard: React.FC<BlogCardProps> = ({
   authorImage,
 }) => {
   return (
-    <div className="bg-white shadow-lg rounded-xl p-4 w-[400px] border border-gray-200">
+    <div className="bg-white  shadow-blue-600 shadow-[2px_0px_4px_2px_rgba(37,99,225,0.5)] rounded-xl p-4 w-[400px] border border-gray-200">
       <div className="flex justify-between items-start">
         <h2 className="text-lg font-bold">{title}</h2>
 
-        <MdOutlineModeEdit classname="text-grey-500 hover:bg-grey-200" />
+        <MdOutlineModeEdit className="text-grey-500 hover:bg-grey-200" />
       </div>
 
       <div className="flex gap-2 my-2">
         {tags.map((tag, index) => (
-          <span key={index} className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+          <span key={index} className="bg-[#003B95] text-white text-xs px-2 py-1 rounded-full">
             {tag}
           </span>
         ))}
@@ -68,7 +68,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
           <p className="text-sm font-semibold">{author}</p>
           <p className="text-xs text-gray-500">Published on: {publishedDate}</p>
         </div>
-        <button className="ml-auto bg-blue-600 text-white px-3 py-1 text-xs rounded-full">Follow</button>
+        <button className="ml-auto bg-[#003B95] text-white px-3 py-1 text-xs rounded-full">Follow</button>
       </div>
     </div>
   );
