@@ -108,8 +108,7 @@ The project is organized as follows:
     AuthProvider.tsx         # Context provider for authentication state management
   App.tsx                    # Main entry point for the app
   index.tsx                  # React entry point
-  /styles
-    tailwind.config.js       # Tailwind CSS configuration file
+  tailwind.config.js       # Tailwind CSS configuration file
 ```
 
 ## Contributing
@@ -133,5 +132,3 @@ This project is licensed under the MIT License.
 - Tailwind CSS for providing an easy and efficient way to style the application.
 - Firebase for user authentication.
 ```
-
----
