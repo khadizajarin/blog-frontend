@@ -4,7 +4,6 @@ import { MdOutlineModeEdit } from "react-icons/md";
 
 interface BlogCardProps {
   title: string;
-  tags: string[];
   description: string;
   author: string;
   publishedDate: string;
@@ -16,7 +15,6 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({
   title,
-  tags,
   description,
   author,
   publishedDate,
@@ -33,13 +31,13 @@ const BlogCard: React.FC<BlogCardProps> = ({
         <MdOutlineModeEdit className="text-grey-500 hover:bg-grey-200" />
       </div>
 
-      <div className="flex gap-2 my-2">
+      {/* <div className="flex gap-2 my-2">
         {tags.map((tag, index) => (
           <span key={index} className="bg-[#003B95] text-white text-xs px-2 py-1 rounded-full">
             {tag}
           </span>
         ))}
-      </div>
+      </div> */}
 
       <p className="text-gray-600 text-sm">{description}</p>
 

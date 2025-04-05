@@ -11,9 +11,7 @@ interface BlogFormValues {
   title: string;
   publishedDate: string;
   category: string;
-  subcategory: string[];
   summary: string;
-  tags: string;
   description: string;
   images: File[];
 }
@@ -78,11 +76,7 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 
     // Perform the POST request with form data
     try {
-      const response = await axiosInstance.post("/posts", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", 
-        },
-      });
+      const response = await axiosInstance.post<any>("/posts", formData);
       console.log("Form submitted successfully:", response.data);
       alert("Your Blog is posted successfully!");
     } catch (error) {
