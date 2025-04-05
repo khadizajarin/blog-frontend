@@ -106,6 +106,23 @@ const BlogForm = ({isOpen, onClose, postToEdit, }: { isOpen: boolean; onClose: (
     }
   };
   
+  const onDelete = async () => {
+    if (postToEdit && postToEdit._id) {
+      try {
+        const response = await axiosInstance.delete(`/posts/${postToEdit._id}`);
+        console.log("Post deleted successfully:", response.data);
+        alert("Blog deleted successfully!");
+        onClose(); // Close the form after deletion
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError;
+          console.error("Axios Error:", axiosError.response?.data);
+        } else {
+          console.error("Unexpected error:", error);
+        }
+      }
+    }
+  };
 
   const onSubmit: SubmitHandler<BlogFormValues> = async (values) => {
     console.log("Submitted Data:", values);
@@ -134,6 +151,8 @@ const BlogForm = ({isOpen, onClose, postToEdit, }: { isOpen: boolean; onClose: (
   
         // Make the PUT request to update theaaa post
         const response = await axiosInstance.put(`/posts/${postToEdit._id}`, formData);
+
+        
   
         console.log("Post updated successfully:", response.data);
         alert("Blog updated successfully!");
@@ -275,7 +294,7 @@ const BlogForm = ({isOpen, onClose, postToEdit, }: { isOpen: boolean; onClose: (
                {/* Display uploaded files */}
               <div className="mt-2  gap-4 flex">
                 {uploadedFiles.map((file, index) => (
-                  <div>
+                  <div key={index}>
                     {/* <p key={index} className="text-sm">{file.name}</p> */}
                     <img key={index}
                       src={URL.createObjectURL(file)}
@@ -308,6 +327,18 @@ const BlogForm = ({isOpen, onClose, postToEdit, }: { isOpen: boolean; onClose: (
               >
                 Close
               </button>
+
+            {/* Delete Button */}
+              {postToEdit && postToEdit._id && (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Delete
+                </button>
+              )}
+
               <button
                 type="submit"
                 className="bg-[#003B95] text-white px-4 py-2 rounded"

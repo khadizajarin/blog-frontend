@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/components/Posts.tsx
-
-import React, {  useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import BlogSearchBar from './BlogSearchBar';
 import BlogCard from './BlogCard';
@@ -20,7 +17,7 @@ interface Post {
   publishedDate: string;
   likes: number;
   views: number;
-  images: File[];
+  images: File[]; // Assuming images are URLs or image paths
   authorImage: string;
 }
 
@@ -29,21 +26,29 @@ const Posts: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const fetchPosts = async () => {
+    try {
+      const response = await axiosInstance.get('posts');
+      setPosts(response.data);
+    } catch (err: any) {
+      console.error('Error fetching posts:', err.response?.data || err.message);
+      setError('Error fetching posts');
+    }
+  };
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosInstance.get('posts');
-        //console.log('Fetched posts:', response.data); // Debugging line
-        setPosts(response.data);
-        //console.log(response.data);
-      } catch (err: any) {
-        console.error('Error fetching posts:', err.response?.data || err.message);
-        setError('Error fetching posts');
-      }
-    };
+    // Fetch posts immediately when the component mounts
     fetchPosts();
-  }, []);
-  
+
+    // Set an interval to fetch posts every 10 seconds (adjust as needed)
+    const intervalId = setInterval(() => {
+      fetchPosts();
+    }, 10000); // 10 seconds interval
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array means this effect runs once when the component mounts
+
   if (error) {
     return <div>{error}</div>;
   }
@@ -53,31 +58,35 @@ const Posts: React.FC = () => {
       <BlogSearchBar />
       <div className='lg:pl-8 flex flex-wrap'>
         {posts.length === 0 ? (
-        <p>No posts found</p>
-      ) : (
-        posts.map((post) => (
-          <div key={post._id} className="my-4 w-full md:w-1/2 lg:w-1/3">
-            <BlogCard 
-              _id={post._id}
-              title={post.title}
-              description={post.description}
-              author={post.author}
-              createdAt={post.createdAt}
-              likes={post.likes}
-              views={post.views}
-              images={post.images}
-              authorImage={post.authorImage} 
-              category={post.category} 
-              subcategory={post.subcategory}   
-              summary={post.summary}  authorEmail={post.authorEmail}  />
-          </div>
-        ))
-      )}
+          <p>No posts found</p>
+        ) : (
+          posts.map((post) => (
+            <div key={post._id} className="my-4 w-full md:w-1/2 lg:w-1/3">
+              <BlogCard
+                _id={post._id}
+                title={post.title}
+                description={post.description}
+                author={post.author}
+                createdAt={post.createdAt}
+                likes={post.likes}
+                views={post.views}
+                images={post.images}
+                authorImage={post.authorImage}
+                category={post.category}
+                subcategory={post.subcategory}
+                summary={post.summary}
+                authorEmail={post.authorEmail}
+              />
+            </div>
+          ))
+        )}
       </div>
-      
-      
+
       <div className='pl-8'>
-        <button onClick={() => setModalOpen(true)} className="bg-[#003B95] text-white px-4 py-2 rounded">
+        <button
+          onClick={() => setModalOpen(true)}
+          className="bg-[#003B95] text-white px-4 py-2 rounded"
+        >
           Post Your Blog
         </button>
       </div>
