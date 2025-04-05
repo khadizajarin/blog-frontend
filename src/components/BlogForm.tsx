@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axiosInstance from "../api/axiosInstance";
 import axios, { AxiosError } from "axios";  
-import Select from "react-select";
+// import Select from "react-select";
 import { useDropzone, Accept } from "react-dropzone";
 
 // Define the BlogFormValues interface
@@ -24,12 +24,12 @@ const categories = [
   { value: "food", label: "Food" },
 ];
 
-const subcategories = [
-  { value: "ai", label: "AI" },
-  { value: "ml", label: "Machine Learning" },
-  { value: "nature", label: "Nature" },
-  { value: "adventure", label: "Adventure" },
-];
+// const subcategories = [
+//   { value: "ai", label: "AI" },
+//   { value: "ml", label: "Machine Learning" },
+//   { value: "nature", label: "Nature" },
+//   { value: "adventure", label: "Adventure" },
+// ];
 
 const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<BlogFormValues>();
@@ -62,10 +62,10 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
     formData.append("title", values.title); // fixed to match the backend field
     formData.append("publishedDate", values.publishedDate);
     formData.append("category", values.category);
-    formData.append("subcategory", JSON.stringify(values.subcategory)); // Convert to JSON string
+    //formData.append("subcategory", JSON.stringify(values.subcategory)); // Convert to JSON string
     formData.append("summary", values.summary);
     formData.append("description", values.description);
-    formData.append("tags", values.tags); // Add if needed
+    //formData.append("tags", values.tags); // Add if needed
    
 
 
@@ -156,7 +156,7 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
             </div>
 
             {/* Sub-category */}
-            <div>
+            {/* <div>
               <label>Sub-category:</label>
               <Select
                 isMulti
@@ -167,7 +167,7 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
                 className="border p-2 w-full"
               />
               {errors.subcategory && <div className="text-red-500">{errors.subcategory.message}</div>}
-            </div>
+            </div> */}
 
             {/* Summary */}
             <div>
