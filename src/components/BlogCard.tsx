@@ -1,34 +1,29 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaRegHeart, FaRegBookmark } from "react-icons/fa";
 import { MdOutlineModeEdit, MdOutlineRemoveRedEye } from "react-icons/md";
 import BlogForm from "./BlogForm";
+import { AuthContext } from "../lib/AuthProvider";
 
 interface BlogCardProps {
+  _id: string,
   title: string;
   description: string;
   author: string;
+  authorEmail: string;
   category: string;
   subcategory: string;
   createdAt: string;
   summary:string;
   likes: number;
   views: number; 
-  images: string[];
+  images: File[];
   authorImage: string;
 }
 
-const BlogCard: React.FC<BlogCardProps> = ({
-  title,
-  description,
-  author,
-  category,
-  subcategory,
-  createdAt,
-  summary,
-  likes,
-  views,
-  images,
-}) => {
+const BlogCard: React.FC<BlogCardProps> = ({ _id,title, description, author, authorEmail, category, subcategory, createdAt, summary, likes, views, images,}) => {
+  const authContext = useContext(AuthContext);
+    const { user } = authContext!;
+  
   // State to track the starting index of the current set of 3 images
   const [startIndex, setStartIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
@@ -55,15 +50,31 @@ const BlogCard: React.FC<BlogCardProps> = ({
   
 
   return (
-    <div className="bg-white shadow-blue-300 shadow-[2px_0px_4px_2px_rgba(37,99,225,0.5)] rounded-xl p-6 w-[35rem] border border-gray-200">
+    <div className="bg-white shadow-blue-300 shadow-[2px_0px_4px_2px_rgba(37,99,225,0.5)] rounded-xl p-6 lg:w-[35rem] md:w-[25rem] border border-gray-200">
       
       <div className="flex justify-between items-start">
         <h2 className="text-lg font-bold">{title}</h2>
-        <MdOutlineModeEdit className="text-grey-500 hover:bg-grey-200  border-2 border-grey-400 cursor-pointer"   onClick={() => setIsEditing(true)}/>
+        {user?.email === authorEmail && (
+          <MdOutlineModeEdit
+            className="text-gray-500 hover:bg-gray-200 border-2 border-gray-400 p-1 w-8 h-8 rounded-full cursor-pointer"
+            onClick={() => setIsEditing(true)}
+          />
+        )}
+
       </div>
 
       {isEditing && (
-         <BlogForm  isOpen={isEditing} onClose={() => setIsEditing(false)}></BlogForm>
+         <BlogForm  isOpen={isEditing} onClose={() => setIsEditing(false)}  postToEdit={{
+          _id,
+          title,
+          description,
+          author,
+          authorEmail,
+          category,
+          subcategory,
+          summary,
+          images,
+        }}></BlogForm>
         )}
 
       <div className="flex text-white my-4 text-xs gap-2">
@@ -103,7 +114,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
               {currentImages.map((img, index) => (
                 <img
                   key={index}
-                  src={img}
+                  src={img instanceof File ? URL.createObjectURL(img) : img} 
                   alt={`Blog ${index}`}
                   className="w-1/3 h-20 object-cover rounded-lg transition-all duration-500"
                 />

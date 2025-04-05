@@ -22,9 +22,9 @@ const AuthPage: React.FC = () => {
 
   const handleSignUp = async (values: { email: string; password: string }) => {
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
-      alert("User created successfully!");
+    await createUserWithEmailAndPassword(auth, values.email, values.password);
      navigate("/posts");
+     alert("User created successfully!");
     } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message); // Now TypeScript knows 'err' is an instance of 'Error'
@@ -37,8 +37,8 @@ const AuthPage: React.FC = () => {
   const handleSignIn = async (values: { email: string; password: string }) => {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
+      navigate("/posts");
       alert("Signed in successfully!");
-     navigate("/posts");
     } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message); // Now TypeScript knows 'err' is an instance of 'Error'

@@ -6,8 +6,9 @@ import { useDropzone, Accept } from "react-dropzone";
 import { AuthContext } from "../lib/AuthProvider";
 
 interface BlogFormValues {
+  _id: string;
   author: string;
-  authorEmail:string;
+  authorEmail: string;
   title: string;
   category: string;
   subcategory: string;
@@ -46,15 +47,7 @@ const subcategories = [
   { value: "self-help", label: "Self Help" },
 ];
 
-const BlogForm = ({
-  isOpen,
-  onClose,
-  postToEdit,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  postToEdit?: any; // Replace with proper type if you have one
-}) => {
+const BlogForm = ({isOpen, onClose, postToEdit, }: { isOpen: boolean; onClose: () => void; postToEdit?: Partial<BlogFormValues>; }) => {
   const authContext = useContext(AuthContext);
   const { user } = authContext!;
   //console.log(user);
@@ -70,7 +63,9 @@ const BlogForm = ({
 
   useEffect(() => {
     if (postToEdit) {
-      setValue("author", postToEdit.author || "");
+      console.log("Editing post:", postToEdit); // Debugging
+      console.log("Post ID:", postToEdit._id);  
+      setValue("_id",postToEdit._id|| "");
       setValue("title", postToEdit.title || "");
       setValue("category", postToEdit.category || "");
       setValue("subcategory", postToEdit.subcategory || "");
@@ -78,6 +73,7 @@ const BlogForm = ({
       setValue("description", postToEdit.description || "");
     }
   }, [postToEdit, setValue]);
+  
 
   const acceptFormats: Accept = {
     "image/*": [],
@@ -94,32 +90,60 @@ const BlogForm = ({
     },
   });
 
+  const handleRemoveImage = (_image: File | string, type: "uploaded" | "existing", index: number) => {
+    if (type === "uploaded") {
+      // Remove the image from the uploaded files state
+      setUploadedFiles((prevFiles) => {
+        const newFiles = prevFiles.filter((_file, i) => i !== index);
+        setValue("images", newFiles); // Update form
+        return newFiles;
+      });
+      setValue("images", uploadedFiles.filter((_file, i) => i !== index)); // Update react-hook-form value
+    } else if (type === "existing") {
+      // Handle the removal of an existing image if needed (e.g., remove from the database or mark it for deletion)
+      // If you need to actually delete the image from the server, you can call an API here.
+      alert("Existing image removal functionality is not implemented yet."); // Placeholder alert
+    }
+  };
+  
+
   const onSubmit: SubmitHandler<BlogFormValues> = async (values) => {
     console.log("Submitted Data:", values);
     const formData = new FormData();
-
+  
+    // Append form fields to the formData
     formData.append("author", values.author);
     formData.append("authorEmail", values.authorEmail);
-    formData.append("title", values.title); 
+    formData.append("title", values.title);
     formData.append("category", values.category);
     formData.append("subcategory", values.subcategory);
     formData.append("summary", values.summary);
     formData.append("description", values.description);
-
+  
+    // Append images if any
     if (values.images && values.images.length > 0) {
       values.images.forEach((file) => {
         formData.append("images", file);
       });
     }
-
+  
     try {
-      if (postToEdit?._id) {
-        const response = await axiosInstance.put<any>(`/posts/${postToEdit._id}`, formData);
-        console.log("Form updated successfully:", response.data);
+      // Check if we are editing an existing post
+      if (postToEdit && postToEdit._id) {
+        console.log("Updating post with ID:", postToEdit._id);
+  
+        // Make the PUT request to update theaaa post
+        const response = await axiosInstance.put(`/posts/${postToEdit._id}`, formData);
+  
+        console.log("Post updated successfully:", response.data);
         alert("Blog updated successfully!");
       } else {
-        const response = await axiosInstance.post<any>("/posts", formData);
-        console.log("Form submitted successfully:", response.data);
+        console.log("Creating a new post...");
+  
+        // Make the POST request to create a new post
+        const response = await axiosInstance.post("/posts", formData);
+  
+        console.log("New post created successfully:", response.data);
         alert("Your Blog is posted successfully!");
       }
     } catch (error) {
@@ -130,10 +154,11 @@ const BlogForm = ({
         console.error("Unexpected error:", error);
       }
     }
-
-    onClose();
+  
+    onClose(); // Close the form after submission
   };
-
+  
+  
   return (
     isOpen && (
       <div className="fixed inset-0 flex items-center justify-center bg-transpa bg-opacity-10 z-50">
@@ -225,12 +250,54 @@ const BlogForm = ({
                 <input {...getInputProps()} />
                 <p>Drop files here or click to upload</p>
               </div>
-              <div className="mt-2">
+               {/* Display existing images if editing */}
+                <div className="mt-2 flex gap-4">
+                {postToEdit?.images && postToEdit.images.length > 0 && postToEdit.images.map((img, index: number) => {
+                  const imageUrl = typeof img === "string" ? img : URL.createObjectURL(img);
+                  return (
+                    <div key={index} className="relative">
+                      <img
+                        src={imageUrl}
+                        alt={`Existing Image ${index}`}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(img, "existing", index)}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        <span className="text-xs text-black">X</span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+               {/* Display uploaded files */}
+              <div className="mt-2  gap-4 flex">
                 {uploadedFiles.map((file, index) => (
-                  <p key={index} className="text-sm">{file.name}</p>
+                  <div>
+                    {/* <p key={index} className="text-sm">{file.name}</p> */}
+                    <img key={index}
+                      src={URL.createObjectURL(file)}
+                      alt={`Uploaded ${index}`}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                     <button
+                        type="button"
+                        onClick={() => handleRemoveImage(file, "uploaded", index)}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        <span className="text-xs text-black">X</span>
+                      </button>
+                  </div>
+                  
                 ))}
               </div>
+
+              
             </div>
+
+
 
             {/* Buttons */}
             <div className="flex justify-between">
@@ -248,6 +315,8 @@ const BlogForm = ({
                 {postToEdit ? "Update" : "Publish"}
               </button>
             </div>
+
+            
           </form>
         </div>
       </div>

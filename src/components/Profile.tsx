@@ -5,6 +5,7 @@ import { AuthContext } from "../lib/AuthProvider";
 
 interface ProfileForm {
   displayName: string;
+  email: string; 
 }
 
 interface ProfileProps {
@@ -46,6 +47,18 @@ const Profile = ({ isOpen, onClose }: ProfileProps) => {
 
         <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+                type="email"
+                defaultValue={user?.email || ""}
+                readOnly
+                {...register("email")}
+                className="border p-2 w-full rounded bg-gray-100  text-black cursor-not-allowed"
+            />
+          </div>
+
+
           <div>
             <label className="block text-sm font-medium">Display Name</label>
             <input

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/Posts.tsx
 
-import React, { Key, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import BlogSearchBar from './BlogSearchBar';
 import BlogCard from './BlogCard';
 import BlogForm from './BlogForm';
 
 interface Post {
+  _id: string;
+  authorEmail: string;
   createdAt: string;
-  _id: Key | null | undefined;
   title: string;
-  tags: string[];
   description: string;
   category: string;
   subcategory: string;
@@ -20,7 +20,7 @@ interface Post {
   publishedDate: string;
   likes: number;
   views: number;
-  images: string[];
+  images: File[];
   authorImage: string;
 }
 
@@ -51,13 +51,14 @@ const Posts: React.FC = () => {
   return (
     <div className='bg-[#E0F7FA] h-full pb-10'>
       <BlogSearchBar />
-      <div className='pl-8 flex flex-wrap'>
+      <div className='lg:pl-8 flex flex-wrap'>
         {posts.length === 0 ? (
         <p>No posts found</p>
       ) : (
         posts.map((post) => (
-          <div key={post._id} className="my-4 w-full sm:w-1/2 md:w-1/4 lg:w-1/3">
+          <div key={post._id} className="my-4 w-full md:w-1/2 lg:w-1/3">
             <BlogCard 
+              _id={post._id}
               title={post.title}
               description={post.description}
               author={post.author}
@@ -68,7 +69,7 @@ const Posts: React.FC = () => {
               authorImage={post.authorImage} 
               category={post.category} 
               subcategory={post.subcategory}   
-              summary={post.summary}      />
+              summary={post.summary}  authorEmail={post.authorEmail}  />
           </div>
         ))
       )}
