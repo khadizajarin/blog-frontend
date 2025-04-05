@@ -1,5 +1,3 @@
-Certainly! Below is a README file written in the code style format:
-
 ```markdown
 # Blog Platform
 
@@ -137,5 +135,3 @@ This project is licensed under the MIT License.
 ```
 
 ---
-
-This README file uses markdown and code-style formatting to make it clean and easy to understand. You can further update or modify it as needed based on your actual project structure.
