@@ -9,11 +9,11 @@ interface ProfileForm {
 }
 
 interface ProfileProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isProfileOpen: boolean;
+  onProfileClose: () => void;
 }
 
-const Profile = ({ isOpen, onClose }: ProfileProps) => {
+const Profile = ({ isProfileOpen, onProfileClose }: ProfileProps) => {
   const authContext = useContext(AuthContext);
   const { user, updateUserProfile, loading } = authContext!;
   const { register, handleSubmit, setValue } = useForm<ProfileForm>();
@@ -30,16 +30,16 @@ const Profile = ({ isOpen, onClose }: ProfileProps) => {
     });
 
     alert("Profile updated!");
-    onClose();
+    onProfileClose();
   };
 
-  if (!isOpen) return null;
+  if (!isProfileOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
         <button
-          onClick={onClose}
+          onClick={onProfileClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
         >
           ✕
