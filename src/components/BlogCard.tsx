@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaRegHeart, FaRegBookmark } from "react-icons/fa";
 import { MdOutlineModeEdit, MdOutlineRemoveRedEye } from "react-icons/md";
+import BlogForm from "./BlogForm";
 
 interface BlogCardProps {
   title: string;
@@ -30,6 +31,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
 }) => {
   // State to track the starting index of the current set of 3 images
   const [startIndex, setStartIndex] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Function to go to the next set of 3 images
   const nextSet = () => {
@@ -50,13 +52,19 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const showNavigation =
     images.length > 3; // Show navigation only if there are more than 3 images
 
+  
+
   return (
     <div className="bg-white shadow-blue-300 shadow-[2px_0px_4px_2px_rgba(37,99,225,0.5)] rounded-xl p-6 w-[35rem] border border-gray-200">
       
       <div className="flex justify-between items-start">
         <h2 className="text-lg font-bold">{title}</h2>
-        <MdOutlineModeEdit className="text-grey-500 hover:bg-grey-200" />
+        <MdOutlineModeEdit className="text-grey-500 hover:bg-grey-200  border-2 border-grey-400 cursor-pointer"   onClick={() => setIsEditing(true)}/>
       </div>
+
+      {isEditing && (
+         <BlogForm  isOpen={isEditing} onClose={() => setIsEditing(false)}></BlogForm>
+        )}
 
       <div className="flex text-white my-4 text-xs gap-2">
         {category && <p className="bg-[#003B95] px-2 py-1 rounded-full">{category}</p>}
@@ -77,14 +85,15 @@ const BlogCard: React.FC<BlogCardProps> = ({
       <div className="flex items-center justify-between text-gray-600 text-sm mt-4">
         <div className="flex items-center justify-start w-1/3">
           <div className="flex items-center gap-1">
-            <FaRegHeart /> {likes}
+            <FaRegHeart /> {likes ?? 0}
           </div>
           <div className="pl-4 flex items-center gap-1">
-            <MdOutlineRemoveRedEye/> {views}
+            <MdOutlineRemoveRedEye /> {views ?? 0}
           </div>
         </div>
         <FaRegBookmark />
       </div>
+
 
       {/* Image Slider */}
       {images.length > 0 && (

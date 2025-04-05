@@ -5,11 +5,9 @@ import axios, { AxiosError } from "axios";
 import { useDropzone, Accept } from "react-dropzone";
 import { AuthContext } from "../lib/AuthProvider";
 
-
-
-// Define the BlogFormValues interface
 interface BlogFormValues {
   author: string;
+  authorEmail:string;
   title: string;
   category: string;
   subcategory: string;
@@ -33,7 +31,6 @@ const categories = [
   { value: "sports", label: "Sports" },
 ];
 
-
 const subcategories = [
   { value: "ai", label: "AI" },
   { value: "ml", label: "Machine Learning" },
@@ -49,23 +46,39 @@ const subcategories = [
   { value: "self-help", label: "Self Help" },
 ];
 
-
-
-const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-
-const authContext = useContext(AuthContext);
-const { user } = authContext!;
+const BlogForm = ({
+  isOpen,
+  onClose,
+  postToEdit,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  postToEdit?: any; // Replace with proper type if you have one
+}) => {
+  const authContext = useContext(AuthContext);
+  const { user } = authContext!;
+  //console.log(user);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<BlogFormValues>();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   useEffect(() => {
-    if (user?.displayName) {
+    if (user?.displayName && user?.email) {
       setValue("author", user.displayName);
+      setValue("authorEmail", user.email);
     }
   }, [user?.displayName, setValue]);
-  
 
-  // Dropzone configuration
+  useEffect(() => {
+    if (postToEdit) {
+      setValue("author", postToEdit.author || "");
+      setValue("title", postToEdit.title || "");
+      setValue("category", postToEdit.category || "");
+      setValue("subcategory", postToEdit.subcategory || "");
+      setValue("summary", postToEdit.summary || "");
+      setValue("description", postToEdit.description || "");
+    }
+  }, [postToEdit, setValue]);
+
   const acceptFormats: Accept = {
     "image/*": [],
   };
@@ -75,7 +88,7 @@ const { user } = authContext!;
     onDrop: (acceptedFiles: File[]) => {
       setUploadedFiles((prevFiles) => {
         const newFiles = [...prevFiles, ...acceptedFiles];
-        setValue("images", newFiles); // Update form state directly
+        setValue("images", newFiles);
         return newFiles;
       });
     },
@@ -83,30 +96,32 @@ const { user } = authContext!;
 
   const onSubmit: SubmitHandler<BlogFormValues> = async (values) => {
     console.log("Submitted Data:", values);
-
-    // Create FormData to append data and images
     const formData = new FormData();
 
-    // Append regular fields
     formData.append("author", values.author);
+    formData.append("authorEmail", values.authorEmail);
     formData.append("title", values.title); 
     formData.append("category", values.category);
     formData.append("subcategory", values.subcategory);
     formData.append("summary", values.summary);
     formData.append("description", values.description);
 
-    // Append images (if any)
     if (values.images && values.images.length > 0) {
       values.images.forEach((file) => {
-        formData.append("images", file); // Use 'file' if that's what the backend expects
+        formData.append("images", file);
       });
     }
 
-    // Perform the POST request with form data
     try {
-      const response = await axiosInstance.post<any>("/posts", formData);
-      console.log("Form submitted successfully:", response.data);
-      alert("Your Blog is posted successfully!");
+      if (postToEdit?._id) {
+        const response = await axiosInstance.put<any>(`/posts/${postToEdit._id}`, formData);
+        console.log("Form updated successfully:", response.data);
+        alert("Blog updated successfully!");
+      } else {
+        const response = await axiosInstance.post<any>("/posts", formData);
+        console.log("Form submitted successfully:", response.data);
+        alert("Your Blog is posted successfully!");
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
@@ -116,13 +131,12 @@ const { user } = authContext!;
       }
     }
 
-    onClose(); // Close the modal after submitting the form
-    
+    onClose();
   };
 
   return (
     isOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-10">
+      <div className="fixed inset-0 flex items-center justify-center bg-transpa bg-opacity-10 z-50">
         <div className="bg-white p-6 rounded-lg w-2/3">
           <h2 className="text-xl font-bold mb-4">Blog Form</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -231,7 +245,7 @@ const { user } = authContext!;
                 type="submit"
                 className="bg-[#003B95] text-white px-4 py-2 rounded"
               >
-                Publish
+                {postToEdit ? "Update" : "Publish"}
               </button>
             </div>
           </form>
