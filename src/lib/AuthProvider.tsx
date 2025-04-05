@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged, User, updateProfile } from "firebase/auth";
 import { auth } from "./firebase.config";
 
 // Define the context type
@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   createUser: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  updateUserProfile: (data: { displayName?: string; photoURL?: string }) => Promise<void>;
   createUserGoogle: () => Promise<void>;
   logOut: () => Promise<void>;
 }
@@ -24,6 +25,15 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const provider = new GoogleAuthProvider();
+
+  // Add this function inside AuthProvider:
+    const updateUserProfile = async (data: { displayName?: string; photoURL?: string }) => {
+      if (!auth.currentUser) return;
+      setLoading(true);
+      await updateProfile(auth.currentUser, data);
+      setUser({ ...auth.currentUser }); // Optional: re-trigger state update
+      setLoading(false);
+    };
 
   // Create user with Google
   const createUserGoogle = async () => {
@@ -74,6 +84,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     createUserGoogle,
     logOut,
+    updateUserProfile, 
   };
 
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;

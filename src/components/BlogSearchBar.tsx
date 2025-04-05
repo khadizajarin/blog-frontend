@@ -1,13 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import { MdRefresh } from "react-icons/md";
 import { AuthContext } from "../lib/AuthProvider";
 import { useNavigate } from 'react-router-dom';
+import Profile from "./Profile";
 
 const BlogSearchBar: React.FC = () => {
   const authContext = useContext(AuthContext);
+  //console.log((authContext?.user));
   const navigate = useNavigate(); // Hook to navigate programmatically
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const user  = authContext?.user;
 
   const handleLogout = async () => {
     if (authContext?.logOut) {
@@ -62,7 +68,26 @@ const BlogSearchBar: React.FC = () => {
               className="bg-[#003B95] text-white px-4 py-2 rounded"
                 >
                 Logout
-              </button>
+          </button>
+          <button
+            className="flex items-center gap-2 px-3 py-2 rounded-full border hover:shadow"
+            onClick={() => setIsModalOpen(true)}
+          >
+            {user?.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <>
+                <span className="text-sm font-medium text-gray-700">Edit Profile</span>
+              </>
+            )}
+          </button>
+
+          <Profile isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                  
       </div>
 
       </div>

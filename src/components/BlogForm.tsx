@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axiosInstance from "../api/axiosInstance";
 import axios, { AxiosError } from "axios";  
-// import Select from "react-select";
 import { useDropzone, Accept } from "react-dropzone";
+import { AuthContext } from "../lib/AuthProvider";
+
+
 
 // Define the BlogFormValues interface
 interface BlogFormValues {
   author: string;
   title: string;
-  publishedDate: string;
   category: string;
+  subcategory: string;
   summary: string;
   description: string;
   images: File[];
@@ -20,18 +22,48 @@ const categories = [
   { value: "tech", label: "Tech" },
   { value: "travel", label: "Travel" },
   { value: "food", label: "Food" },
+  { value: "hiking", label: "Hiking" },
+  { value: "lifestyle", label: "Lifestyle" },
+  { value: "education", label: "Education" },
+  { value: "health", label: "Health" },
+  { value: "fashion", label: "Fashion" },
+  { value: "finance", label: "Finance" },
+  { value: "personal", label: "Personal" },
+  { value: "business", label: "Business" },
+  { value: "sports", label: "Sports" },
 ];
 
-// const subcategories = [
-//   { value: "ai", label: "AI" },
-//   { value: "ml", label: "Machine Learning" },
-//   { value: "nature", label: "Nature" },
-//   { value: "adventure", label: "Adventure" },
-// ];
+
+const subcategories = [
+  { value: "ai", label: "AI" },
+  { value: "ml", label: "Machine Learning" },
+  { value: "nature", label: "Nature" },
+  { value: "adventure", label: "Adventure" },
+  { value: "deep-learning", label: "Deep Learning" },
+  { value: "wildlife", label: "Wildlife" },
+  { value: "coding", label: "Coding" },
+  { value: "camping", label: "Camping" },
+  { value: "budget-travel", label: "Budget Travel" },
+  { value: "recipes", label: "Recipes" },
+  { value: "fitness", label: "Fitness" },
+  { value: "self-help", label: "Self Help" },
+];
+
+
 
 const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+
+const authContext = useContext(AuthContext);
+const { user } = authContext!;
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<BlogFormValues>();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    if (user?.displayName) {
+      setValue("author", user.displayName);
+    }
+  }, [user?.displayName, setValue]);
+  
 
   // Dropzone configuration
   const acceptFormats: Accept = {
@@ -57,15 +89,11 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 
     // Append regular fields
     formData.append("author", values.author);
-    formData.append("title", values.title); // fixed to match the backend field
-    formData.append("publishedDate", values.publishedDate);
+    formData.append("title", values.title); 
     formData.append("category", values.category);
-    //formData.append("subcategory", JSON.stringify(values.subcategory)); // Convert to JSON string
+    formData.append("subcategory", values.subcategory);
     formData.append("summary", values.summary);
     formData.append("description", values.description);
-    //formData.append("tags", values.tags); // Add if needed
-   
-
 
     // Append images (if any)
     if (values.images && values.images.length > 0) {
@@ -94,7 +122,7 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 
   return (
     isOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-blue-100 bg-opacity-10">
+      <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-10">
         <div className="bg-white p-6 rounded-lg w-2/3">
           <h2 className="text-xl font-bold mb-4">Blog Form</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -120,17 +148,6 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
               {errors.title && <div className="text-red-500">{errors.title.message}</div>}
             </div>
 
-            {/* Publication Date */}
-            <div>
-              <label>Publication Date:</label>
-              <input
-                type="date"
-                {...register("publishedDate", { required: "Published Date is required" })}
-                className="border p-2 w-full"
-              />
-              {errors.publishedDate && <div className="text-red-500">{errors.publishedDate.message}</div>}
-            </div>
-
             {/* Category */}
             <div>
               <label>Category:</label>
@@ -150,18 +167,22 @@ const BlogForm = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
             </div>
 
             {/* Sub-category */}
-            {/* <div>
-              <label>Sub-category:</label>
-              <Select
-                isMulti
-                options={subcategories}
-                onChange={(selected) =>
-                  setValue("subcategory", selected ? selected.map((item) => item.value) : [])
-                }
+            <div>
+              <label>Sub-Category:</label>
+              <select
+                {...register("subcategory", { required: "Category is required" })}
                 className="border p-2 w-full"
-              />
-              {errors.subcategory && <div className="text-red-500">{errors.subcategory.message}</div>}
-            </div> */}
+                defaultValue=""
+              >
+                <option value="">Select</option>
+                {subcategories.map((subcat) => (
+                  <option key={subcat.value} value={subcat.value}>
+                    {subcat.label}
+                  </option>
+                ))}
+              </select>
+              {errors.category && <div className="text-red-500">{errors.category.message}</div>}
+            </div>
 
             {/* Summary */}
             <div>

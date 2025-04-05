@@ -8,11 +8,15 @@ import BlogCard from './BlogCard';
 import BlogForm from './BlogForm';
 
 interface Post {
+  createdAt: string;
   _id: Key | null | undefined;
   title: string;
   tags: string[];
   description: string;
+  category: string;
+  subcategory: string;
   author: string;
+  summary: string;
   publishedDate: string;
   likes: number;
   views: number;
@@ -29,9 +33,9 @@ const Posts: React.FC = () => {
     const fetchPosts = async () => {
       try {
         const response = await axiosInstance.get('posts');
-        console.log('Fetched posts:', response.data); // Debugging line
+        //console.log('Fetched posts:', response.data); // Debugging line
         setPosts(response.data);
-        console.log(response.data);
+        //console.log(response.data);
       } catch (err: any) {
         console.error('Error fetching posts:', err.response?.data || err.message);
         setError('Error fetching posts');
@@ -47,23 +51,24 @@ const Posts: React.FC = () => {
   return (
     <div className='bg-[#E0F7FA] h-full pb-10'>
       <BlogSearchBar />
-      <div className='pl-8'>
+      <div className='pl-8 flex flex-wrap'>
         {posts.length === 0 ? (
         <p>No posts found</p>
       ) : (
         posts.map((post) => (
-          <div key={post._id} className="my-4">
+          <div key={post._id} className="my-4 w-full sm:w-1/2 md:w-1/4 lg:w-1/3">
             <BlogCard 
               title={post.title}
-              tags={post.tags}
               description={post.description}
               author={post.author}
-              publishedDate={post.publishedDate}
+              createdAt={post.createdAt}
               likes={post.likes}
               views={post.views}
               images={post.images}
-              authorImage={post.authorImage}
-            />
+              authorImage={post.authorImage} 
+              category={post.category} 
+              subcategory={post.subcategory}   
+              summary={post.summary}      />
           </div>
         ))
       )}
